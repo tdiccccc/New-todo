@@ -1,7 +1,7 @@
-class Api::V1::TodosController < Application_controller
+class Api::V1::TodosController < ApplicationController
   def index
-    todos = Todo.order(update_at: desc)
-    render json: todos #todosがjson形式で返される
+    todos = Todo.order(updated_at: :desc)
+    render json: todos
   end
 
   def show
@@ -28,8 +28,16 @@ class Api::V1::TodosController < Application_controller
   end
 
   def destroy
-    if Todo.destory(params[:id])
-      head :no_content ##特に返すものがない
+    if Todo.destroy(params[:id])
+      head :no_content
+    else
+      render json: { error: "Failed to destroy" }, status: 422
+    end
+  end
+
+  def destroy_all
+    if Todo.destroy_all
+      head :no_content
     else
       render json: { error: "Failed to destroy" }, status: 422
     end
