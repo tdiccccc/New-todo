@@ -85,6 +85,33 @@ function TodoList() {
       })
   }, [])//第二引数に空の引数を渡す
 
+  const removeAllTodos = () => {
+    const sure = window.confirm('Are you sure?');//ダイアログボックスの表示
+    if (sure) {
+      axios.delete('/api/v1/todos/destroy_all')
+        .then(resp => {
+          setTodos([])
+        })
+        .catch(e => {
+          console.log(e)
+        })
+    }
+  }
+
+  const updateIsCompleted = (index, val) => { //
+    var date = {
+      id: val.id,
+      name: val.name,
+      is_completed: !val.is_completed //!val.is_completed = 反転させた値
+    }
+    axios.patch(`/api/v1/todos/${val.id}`, data)
+      .then(resp => {
+        const newTodos = [...todos]//...スプレッド構文
+        newTodos[index].is_completed = resp.data.is_completed
+        setTodos(newTodos)
+      })
+  }
+
   return (
     <div>TodoList</div>
   )
