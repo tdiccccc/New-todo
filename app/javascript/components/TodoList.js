@@ -39,6 +39,7 @@ const TodoName = styled.span`
     opacity: 0.4;
   `}
 `
+
 //Row = htmlのタグの想定
 const Row = styled.div`
   display: flex;
@@ -71,8 +72,8 @@ const EditButton = styled.span`
 `
 
 function TodoList() {
-  const [Todos, setTodos] = useState([]) //初期値は空
-  const [searhName, setSearchName] = useState('') //空の文字列
+  const [todos, setTodos] = useState([])
+  const [searchName, setSearchName] = useState('')
 
   useEffect(() => {
     axios.get('/api/v1/todos.json')//todos_controllerにアクセス
@@ -99,21 +100,67 @@ function TodoList() {
   }
 
   const updateIsCompleted = (index, val) => { //
-    var date = {
+    var data = {
       id: val.id,
       name: val.name,
       is_completed: !val.is_completed //!val.is_completed = 反転させた値
     }
     axios.patch(`/api/v1/todos/${val.id}`, data)
       .then(resp => {
-        const newTodos = [...todos]//...スプレッド構文
+        const newTodos = [...todos]
         newTodos[index].is_completed = resp.data.is_completed
         setTodos(newTodos)
       })
   }
 
   return (
-    <div>TodoList</div>
+    <>
+      <h1>Todo List</h1>
+      <SearchAndButtton>
+        <SearchForm
+          type="text"
+          placeholder="Search todo..."
+          onChange={event => {
+            setSearchName(event.target.value)
+          }}
+        />
+        <RemoveAllButton onClick={removeAllTodos}>
+          Remove All
+        </RemoveAllButton>
+      </SearchAndButtton>
+
+      <div>
+        {todos.filter((val) => {
+          if (searchName === "") {
+            return val
+          } else if (val.name.toLowerCase().includes(searchName.toLowerCase())) {
+            return val
+          }
+        }).map((val, key) => {
+          return (
+            <Row key={key}>
+              {val.is_completed ? (
+                <CheckedBox>
+                  <ImCheckboxChecked onClick={() => updateIsCompleted(key, val)} />
+                </CheckedBox>
+              ) : (
+                <UncheckedBox>
+                  <ImCheckboxUnchecked onClick={() => updateIsCompleted(key, val)} />
+                </UncheckedBox>
+              )}
+              <TodoName is_completed={val.is_completed}>
+                {val.name}
+              </TodoName>
+              <Link to={"/todos/" + val.id + "/edit"}>
+                <EditButton>
+                  <AiFillEdit />
+                </EditButton>
+              </Link>
+            </Row>
+          )
+        })}
+      </div>
+    </>
   )
 }
 
