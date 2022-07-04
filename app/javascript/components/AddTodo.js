@@ -76,7 +76,7 @@ function AddTodo(props) {
           is_completed: resp.data.is_completed
         })
         //notify()
-        props.history.push('/todos')
+        //props.history.push('/todos') リダイレクトできない（Cannot read properties of undefined (reading 'push')）
       })
       .catch(e => {
         console.log(e)
