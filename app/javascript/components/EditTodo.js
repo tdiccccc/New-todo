@@ -58,10 +58,79 @@ function EditTodo() {
     name: "",
     is_completed: false
   }
-  
+
+  const [currentTodo, setCurrentTodo] =useState(initialTodoState)
+
+
+  // const notify = () => {
+  //   toast.success("Todo successfully updated!", {
+  //     position: "bottom-center",
+  //     hideProgressBar: true
+  //   });
+  // }
+
+
+  const getTodo = id => {
+    axios.get(`/api/v1/todos${id}`)
+    .then(resp => {
+      setCurrentTodo(resp.data)
+    })
+    .catch(e => {
+      console.log(e)
+    })
+  }
+
+  useEffect(() => {
+    getTodo(props.match.params.id)
+  },[props.match.params.id])
+
+  const handleInputChange = event => {
+    const { name, value } = event.target;
+    setCurrentTodo({...currentTodo, [name]: value }) 
+  }
+
+  const updateIsCompleted = (val) => {
+    var data = {
+      id: val.id,
+      name: val.name,
+      is_completed: !val.is_completed
+    };
+    axios.patch(`/api/v1/todos/${val.id}`, data)
+    .then(resp => {
+      setCurrentTodo(resp.data);//現在のtodoが更新される
+    })
+  };
+
+  const updateTodo = () => {
+    axios.patch(`/api/v1/todos/${currentTodo.id}`, currentTodo)
+    .then(response => {
+      //notify();フラッシュメッセージ
+      props.history.push("/todos");//なんか動かない
+    })
+    .catch(e => {
+      console.log(e);
+    });
+  };
+
+  const deleteTodo = () => {
+    const sure = window.confirm('Are you sure?');//ダイアログボックス
+    if (sure) {
+      axios.delete(`/api/v1/todos/${currentTodo.id}`)
+      .then(resp => {
+        console.log(resp.data);
+        props.history.push("/todos");//多分動かない
+      })
+      .catch(e => {
+        console.log(e);
+      });
+    }
+  };
+
   return (
     <>
       <h1>Editing Todo</h1>
+
+      
     </>
   )
 }
