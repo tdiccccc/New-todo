@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import axios from 'axios'
 import styled from 'styled-components'
 // import { toast } from 'react-toastify'
@@ -55,11 +56,14 @@ const DeleteButton = styled.button`
 //toast.configure()
 
 function EditTodo(props) {
+
   const initialTodoState = {
     id: null,
     name: "",
     is_completed: false
   }
+
+  const params = useSearchParams();
 
   const [currentTodo, setCurrentTodo] = useState(initialTodoState)
 
@@ -81,8 +85,8 @@ function EditTodo(props) {
   }
 
   useEffect(() => {
-    getTodo(props.match.params.id)
-  }, [props.match.params.id])
+    getTodo(params)
+  }, [params])
 
   const handleInputChange = event => {
     const { name, value } = event.target;
